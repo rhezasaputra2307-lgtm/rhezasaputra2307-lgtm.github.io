@@ -3,360 +3,841 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Title Fight</title>
+  <title>Title Fight — Kingston, PA</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Syne:wght@400;600;700;800&family=Syne+Mono&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --black: #0d0d0d;
-      --white: #f0ece4;
-      --red: #c0392b;
-      --muted: #888;
-      --border: #2a2a2a;
+      --ink:    #09080a;
+      --paper:  #edeae3;
+      --dim:    #252228;
+      --border: #1c1a1f;
+      --muted:  #67616e;
+      --red:    #9e2820;
     }
+
+    html { scroll-behavior: smooth; }
 
     body {
-      background: var(--black);
-      color: var(--white);
-      font-family: 'IBM Plex Mono', monospace;
-      min-height: 100vh;
+      background: var(--ink);
+      color: var(--paper);
+      font-family: 'Syne Mono', monospace;
+      overflow-x: hidden;
     }
 
-    /* HERO */
-    .hero {
-      position: relative;
-      height: 100vh;
+    /* grain overlay */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23g)' opacity='0.055'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 9000;
+    }
+
+    /* ─── NAV ──────────────────────────────────────── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      padding: 1.4rem 3vw;
       display: flex;
-      flex-direction: column;
+      justify-content: space-between;
       align-items: center;
-      justify-content: center;
-      text-align: center;
-      overflow: hidden;
+      transition: background 0.4s, backdrop-filter 0.4s;
+    }
+    nav.stuck {
+      background: rgba(9,8,10,0.88);
+      backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--border);
     }
+    .nav-brand {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 17px;
+      letter-spacing: 0.14em;
+      color: var(--red);
+    }
+    .nav-links {
+      list-style: none;
+      display: flex;
+      gap: 2.5rem;
+    }
+    .nav-links a {
+      font-family: 'Syne Mono', monospace;
+      font-size: 9.5px;
+      letter-spacing: 0.4em;
+      text-transform: uppercase;
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--paper); }
 
-    .hero::before {
-      content: '';
+    /* ─── HERO ─────────────────────────────────────── */
+    .hero {
+      position: relative;
+      height: 100svh;
+      min-height: 560px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 0 4vw 4.5rem;
+      overflow: hidden;
+    }
+
+    .hero-atmosphere {
       position: absolute;
       inset: 0;
+      z-index: 0;
+      background:
+        radial-gradient(ellipse 90% 55% at 65% 35%, rgba(60,18,12,0.6) 0%, transparent 65%),
+        radial-gradient(ellipse 50% 70% at 15% 85%, rgba(22,18,26,0.9) 0%, transparent 55%),
+        var(--ink);
+    }
+
+    .hero-lines {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
       background: repeating-linear-gradient(
         0deg,
-        transparent,
-        transparent 2px,
-        rgba(255,255,255,0.015) 2px,
-        rgba(255,255,255,0.015) 4px
+        transparent 0px, transparent 3px,
+        rgba(0,0,0,0.07) 3px, rgba(0,0,0,0.07) 4px
       );
-      pointer-events: none;
     }
 
-    .hero-noise {
-      position: absolute;
-      inset: 0;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
-      pointer-events: none;
+    .hero-content {
+      position: relative;
+      z-index: 1;
     }
 
-    .hero-label {
-      font-size: 11px;
-      letter-spacing: 0.4em;
+    .hero-eyebrow {
+      font-size: 9.5px;
+      letter-spacing: 0.55em;
       color: var(--red);
       text-transform: uppercase;
-      margin-bottom: 1.5rem;
-      animation: fadeup 1s ease both;
+      margin-bottom: 1rem;
+      opacity: 0;
+      animation: up 0.9s 0.15s ease both;
     }
 
     .hero-title {
       font-family: 'Bebas Neue', sans-serif;
-      font-size: clamp(80px, 18vw, 200px);
-      line-height: 0.88;
-      letter-spacing: -0.01em;
-      animation: fadeup 1s 0.1s ease both;
+      font-size: clamp(96px, 20vw, 240px);
+      line-height: 0.84;
+      letter-spacing: -0.02em;
     }
 
-    .hero-title span {
+    .hero-title .word {
       display: block;
+      opacity: 0;
+      transform: translateY(28px);
     }
-
-    .hero-title .red { color: var(--red); }
-
-    .hero-sub {
-      margin-top: 2rem;
-      font-size: 12px;
-      color: var(--muted);
-      letter-spacing: 0.2em;
-      animation: fadeup 1s 0.2s ease both;
-    }
-
-    .scroll-hint {
-      position: absolute;
-      bottom: 2rem;
-      font-size: 11px;
-      color: var(--muted);
-      letter-spacing: 0.3em;
-      animation: pulse 2s ease-in-out infinite;
-    }
-
-    @keyframes fadeup {
-      from { opacity: 0; transform: translateY(24px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    @keyframes pulse {
-      0%, 100% { opacity: 0.3; } 50% { opacity: 1; }
-    }
-
-    /* SECTIONS */
-    section {
-      max-width: 900px;
-      margin: 0 auto;
-      padding: 6rem 2rem;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .section-label {
-      font-size: 10px;
-      letter-spacing: 0.5em;
+    .hero-title .word:nth-child(1) { animation: up 0.75s 0.3s ease both; }
+    .hero-title .word:nth-child(2) {
+      animation: up 0.75s 0.45s ease both;
       color: var(--red);
+    }
+
+    .hero-genres {
+      margin-top: 2.2rem;
+      display: flex;
+      align-items: center;
+      gap: 0;
+      opacity: 0;
+      animation: up 0.9s 0.75s ease both;
+    }
+
+    .genre-chip {
+      font-size: 10px;
+      letter-spacing: 0.3em;
       text-transform: uppercase;
-      margin-bottom: 2rem;
+      color: var(--muted);
+      padding: 0 1.5rem;
+    }
+    .genre-chip:first-child { padding-left: 0; }
+    .genre-div {
+      width: 1px;
+      height: 12px;
+      background: var(--border);
     }
 
-    h2 {
+    .hero-scroll-hint {
+      position: absolute;
+      bottom: 2.8rem;
+      right: 4vw;
+      writing-mode: vertical-rl;
+      font-size: 9px;
+      letter-spacing: 0.5em;
+      color: var(--muted);
+      opacity: 0;
+      animation: up 1s 1.3s ease both, bob 3s 2.5s ease-in-out infinite;
+    }
+
+    @keyframes up {
+      from { opacity: 0; transform: translateY(22px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes bob {
+      0%,100% { transform: translateY(0); }
+      50%      { transform: translateY(7px); }
+    }
+
+    /* ─── SHARED SECTION STYLES ─────────────────────── */
+    .sec {
+      padding: 7rem 4vw;
+      border-top: 1px solid var(--border);
+      opacity: 0;
+      transform: translateY(36px);
+      transition: opacity 0.85s ease, transform 0.85s ease;
+    }
+    .sec.vis { opacity: 1; transform: translateY(0); }
+
+    .sec-tag {
+      display: flex;
+      align-items: center;
+      gap: 1.2rem;
+      font-size: 9px;
+      letter-spacing: 0.6em;
+      text-transform: uppercase;
+      color: var(--red);
+      margin-bottom: 3.5rem;
+    }
+    .sec-tag::after {
+      content: '';
+      flex: none;
+      width: 48px;
+      height: 1px;
+      background: var(--dim);
+    }
+
+    .sec-heading {
       font-family: 'Bebas Neue', sans-serif;
-      font-size: clamp(40px, 8vw, 80px);
-      line-height: 1;
+      font-size: clamp(44px, 7vw, 82px);
+      line-height: 0.92;
       margin-bottom: 2rem;
     }
 
-    p {
-      font-size: 14px;
-      line-height: 1.9;
-      color: #bbb;
-      max-width: 65ch;
+    /* ─── ABOUT ─────────────────────────────────────── */
+    .about-layout {
+      display: grid;
+      grid-template-columns: 1fr 1.2fr;
+      gap: 5rem;
+      align-items: start;
     }
 
-    p + p { margin-top: 1rem; }
+    .about-sticky {
+      position: sticky;
+      top: 7rem;
+    }
 
-    /* DISCOGRAPHY */
-    .albums {
+    .about-sticky .sec-heading em {
+      font-style: normal;
+      color: var(--red);
+    }
+
+    .about-body p {
+      font-family: 'Syne', sans-serif;
+      font-size: 15px;
+      line-height: 1.9;
+      color: #9a9098;
+    }
+    .about-body p + p { margin-top: 1.2rem; }
+
+    .blockquote {
+      margin-top: 2.8rem;
+      padding: 2rem 2rem 2rem 2.2rem;
+      border-left: 2px solid var(--red);
+      background: rgba(255,255,255,0.018);
+    }
+    .blockquote p {
+      font-family: 'Syne', sans-serif;
+      font-size: 16px;
+      line-height: 1.7;
+      color: var(--paper);
+      font-style: italic;
+    }
+    .blockquote cite {
+      display: block;
+      margin-top: 0.9rem;
+      font-family: 'Syne Mono', monospace;
+      font-size: 9.5px;
+      letter-spacing: 0.35em;
+      color: var(--muted);
+      font-style: normal;
+    }
+
+    .stat-strip {
+      grid-column: 1 / -1;
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      gap: 2rem;
-      margin-top: 3rem;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1px;
+      background: var(--border);
+      margin-top: 4.5rem;
+    }
+    .stat {
+      background: var(--ink);
+      padding: 2.2rem 1.8rem;
+    }
+    .stat-val {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 52px;
+      line-height: 1;
+      color: var(--paper);
+      margin-bottom: 0.4rem;
+    }
+    .stat-lbl {
+      font-size: 9.5px;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    /* ─── DISCOGRAPHY ───────────────────────────────── */
+    .discog-sub {
+      font-family: 'Syne', sans-serif;
+      font-size: 15px;
+      line-height: 1.85;
+      color: #9a9098;
+      max-width: 48ch;
+      margin-bottom: 4rem;
+    }
+
+    .albums-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2px;
+      background: var(--border);
     }
 
     .album {
-      position: relative;
-    }
-
-    .album-art {
-      width: 100%;
-      aspect-ratio: 1;
-      background: var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 1rem;
+      background: var(--ink);
       position: relative;
       overflow: hidden;
+      cursor: default;
+      transition: background 0.5s;
     }
+    .album:hover { background: #0e0c10; }
 
-    .album-art::after {
-      content: '';
+    .album-fill {
+      padding: 2.8rem 2.2rem 2.5rem;
+      transition: transform 0.6s cubic-bezier(0.22,1,0.36,1);
+    }
+    .album:hover .album-fill { transform: translateY(-5px); }
+
+    .album-ghost-num {
       position: absolute;
-      inset: 0;
-      border: 1px solid rgba(255,255,255,0.08);
+      right: 1.2rem;
+      top: 0.8rem;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 90px;
+      line-height: 1;
+      color: rgba(255,255,255,0.03);
+      pointer-events: none;
+      user-select: none;
     }
 
-    .album-icon {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 60px;
-      color: rgba(255,255,255,0.06);
-      letter-spacing: -2px;
+    .album-pip {
+      height: 3px;
+      width: 36px;
+      margin-bottom: 2.2rem;
+      transition: width 0.35s ease;
     }
+    .album:hover .album-pip { width: 72px; }
+
+    .shed   .album-pip { background: #8b1a0e; }
+    .floral .album-pip { background: #4e7040; }
+    .hyper  .album-pip { background: #3b5488; }
 
     .album-year {
-      font-size: 10px;
-      letter-spacing: 0.3em;
-      color: var(--red);
-      margin-bottom: 0.4rem;
+      font-size: 9.5px;
+      letter-spacing: 0.45em;
+      color: var(--muted);
+      margin-bottom: 0.55rem;
     }
 
-    .album-title {
+    .album-name {
       font-family: 'Bebas Neue', sans-serif;
-      font-size: 22px;
-      letter-spacing: 0.05em;
-      margin-bottom: 0.3rem;
+      font-size: 46px;
+      line-height: 0.95;
+      letter-spacing: 0.02em;
+      margin-bottom: 0.5rem;
+    }
+    .shed   .album-name { color: #c44840; }
+    .floral .album-name { color: #82b866; }
+    .hyper  .album-name { color: #6e9ad8; }
+
+    .album-rec {
+      font-size: 9.5px;
+      letter-spacing: 0.25em;
+      color: var(--muted);
+      margin-bottom: 2.5rem;
     }
 
-    .album-label {
-      font-size: 11px;
+    .track-list {
+      list-style: none;
+      border-top: 1px solid var(--border);
+      padding-top: 1.6rem;
+    }
+    .track-list li {
+      display: flex;
+      gap: 0.9rem;
+      align-items: baseline;
+      font-size: 12px;
+      color: #5a5462;
+      padding: 0.32rem 0;
+      border-bottom: 1px solid rgba(255,255,255,0.025);
+      transition: color 0.2s;
+    }
+    .album:hover .track-list li { color: #908898; }
+    .track-list li .dash { color: var(--dim); font-size: 10px; flex-shrink: 0; }
+
+    .album-genre-tag {
+      display: inline-block;
+      margin-top: 1.8rem;
+      font-size: 9px;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      padding: 0.3rem 0.75rem;
+      border: 1px solid var(--border);
       color: var(--muted);
     }
 
-    /* MEMBERS */
-    .members {
+    /* ─── MEMBERS ────────────────────────────────────── */
+    .members-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-      gap: 1.5rem;
-      margin-top: 3rem;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 2px;
+      background: var(--border);
     }
 
     .member {
-      padding: 1.5rem;
-      border: 1px solid var(--border);
+      background: var(--ink);
+      padding: 2.5rem 2rem;
       position: relative;
+      overflow: hidden;
+      transition: background 0.4s;
+    }
+    .member:hover { background: #0e0c10; }
+
+    .member-bg-num {
+      position: absolute;
+      bottom: -1rem;
+      right: 0.5rem;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 110px;
+      line-height: 1;
+      color: rgba(255,255,255,0.023);
+      pointer-events: none;
+      user-select: none;
     }
 
-    .member::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0;
-      width: 2px;
-      height: 100%;
+    .member-accent {
+      width: 18px;
+      height: 2px;
       background: var(--red);
+      margin-bottom: 2rem;
+      transition: width 0.35s;
     }
+    .member:hover .member-accent { width: 46px; }
 
     .member-name {
       font-family: 'Bebas Neue', sans-serif;
-      font-size: 22px;
-      margin-bottom: 0.3rem;
+      font-size: 29px;
+      line-height: 1.05;
+      letter-spacing: 0.03em;
+      margin-bottom: 0.4rem;
     }
 
     .member-role {
-      font-size: 11px;
-      color: var(--muted);
-      letter-spacing: 0.2em;
-    }
-
-    /* QUOTES */
-    .quote-block {
-      margin: 4rem 0 0;
-      padding: 2rem;
-      border-left: 2px solid var(--red);
-    }
-
-    .quote-block p {
-      font-size: 18px;
-      line-height: 1.6;
-      color: var(--white);
-      font-style: italic;
-      max-width: none;
-    }
-
-    .quote-attr {
-      margin-top: 1rem;
-      font-size: 11px;
+      font-size: 9.5px;
       letter-spacing: 0.3em;
+      text-transform: uppercase;
       color: var(--muted);
     }
 
-    /* FOOTER */
+    /* ─── SOUND / EVOLUTION ─────────────────────────── */
+    .evo-layout {
+      display: grid;
+      grid-template-columns: 1fr 1.6fr;
+      gap: 5rem;
+      align-items: start;
+    }
+
+    .timeline { position: relative; }
+
+    .tl-item {
+      position: relative;
+      padding-left: 2rem;
+      padding-bottom: 3.2rem;
+    }
+    .tl-item:last-child { padding-bottom: 0; }
+
+    .tl-item::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 1px;
+      background: var(--border);
+    }
+    .tl-item:last-child::before { height: 8px; bottom: auto; }
+
+    .tl-dot {
+      position: absolute;
+      left: -4.5px;
+      top: 7px;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      border: 1px solid var(--ink);
+    }
+    .tl-item:nth-child(1) .tl-dot { background: #8b1a0e; }
+    .tl-item:nth-child(2) .tl-dot { background: #4e7040; }
+    .tl-item:nth-child(3) .tl-dot { background: #3b5488; }
+
+    .tl-year {
+      font-size: 9.5px;
+      letter-spacing: 0.45em;
+      color: var(--muted);
+      margin-bottom: 0.4rem;
+    }
+
+    .tl-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 26px;
+      letter-spacing: 0.04em;
+      margin-bottom: 0.6rem;
+    }
+
+    .tl-desc {
+      font-family: 'Syne', sans-serif;
+      font-size: 12.5px;
+      line-height: 1.7;
+      color: var(--muted);
+    }
+
+    .evo-prose {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .evo-prose p {
+      font-family: 'Syne', sans-serif;
+      font-size: 15px;
+      line-height: 1.9;
+      color: #908898;
+    }
+
+    .evo-prose em { color: var(--paper); font-style: normal; }
+
+    .tag-cloud {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      margin-top: 0.8rem;
+    }
+
+    .genre-pill {
+      font-family: 'Syne Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      padding: 0.28rem 0.75rem;
+      border: 1px solid;
+      color: var(--muted);
+    }
+    .pill-red   { border-color: rgba(139,26,14,0.5); }
+    .pill-green { border-color: rgba(78,112,64,0.5); }
+    .pill-blue  { border-color: rgba(59,84,136,0.5); }
+
+    /* ─── FOOTER ─────────────────────────────────────── */
     footer {
-      text-align: center;
-      padding: 4rem 2rem;
-      font-size: 11px;
-      color: var(--muted);
-      letter-spacing: 0.2em;
+      border-top: 1px solid var(--border);
+      padding: 4.5rem 4vw 3rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 2rem;
     }
 
-    footer span { color: var(--red); }
+    .footer-mark {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(48px, 8vw, 80px);
+      line-height: 1;
+      color: var(--dim);
+      letter-spacing: 0.02em;
+    }
+
+    .footer-aside {
+      text-align: right;
+      font-size: 10px;
+      letter-spacing: 0.25em;
+      color: var(--muted);
+      line-height: 2;
+    }
+    .footer-aside strong {
+      display: block;
+      color: var(--red);
+      font-weight: 400;
+    }
+
+    /* ─── RESPONSIVE ─────────────────────────────────── */
+    @media (max-width: 900px) {
+      .about-layout { grid-template-columns: 1fr; gap: 3rem; }
+      .about-sticky { position: static; }
+      .stat-strip { grid-template-columns: repeat(2, 1fr); }
+      .albums-grid { grid-template-columns: 1fr; }
+      .members-grid { grid-template-columns: repeat(2, 1fr); }
+      .evo-layout { grid-template-columns: 1fr; gap: 3rem; }
+    }
+    @media (max-width: 560px) {
+      .nav-links { display: none; }
+      .hero-genres { flex-wrap: wrap; gap: 0.5rem; }
+      .genre-div { display: none; }
+      .genre-chip { padding: 0; }
+      .stat-strip { grid-template-columns: 1fr 1fr; }
+      footer { flex-direction: column; align-items: flex-start; }
+      .footer-aside { text-align: left; }
+    }
   </style>
 </head>
 <body>
 
+  <!-- NAV -->
+  <nav id="nav">
+    <span class="nav-brand">Title Fight</span>
+    <ul class="nav-links">
+      <li><a href="#about">About</a></li>
+      <li><a href="#records">Records</a></li>
+      <li><a href="#members">Members</a></li>
+      <li><a href="#sound">Sound</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
   <div class="hero">
-    <div class="hero-noise"></div>
-    <p class="hero-label">Kingston, Pennsylvania — Est. 2003</p>
-    <h1 class="hero-title">
-      <span>TITLE</span>
-      <span class="red">FIGHT</span>
-    </h1>
-    <p class="hero-sub">Post-Hardcore · Shoegaze · Indie Rock</p>
-    <p class="scroll-hint">↓ &nbsp; scroll</p>
+    <div class="hero-atmosphere"></div>
+    <div class="hero-lines"></div>
+    <div class="hero-content">
+      <p class="hero-eyebrow">Kingston, Pennsylvania &mdash; Est. 2003</p>
+      <h1 class="hero-title">
+        <span class="word">TITLE</span>
+        <span class="word">FIGHT</span>
+      </h1>
+      <div class="hero-genres">
+        <span class="genre-chip">Post-Hardcore</span>
+        <span class="genre-div"></span>
+        <span class="genre-chip">Shoegaze</span>
+        <span class="genre-div"></span>
+        <span class="genre-chip">Indie Rock</span>
+      </div>
+    </div>
+    <p class="hero-scroll-hint">Scroll &darr;</p>
   </div>
 
   <!-- ABOUT -->
-  <section>
-    <p class="section-label">About</p>
-    <h2>Four Kids From Scranton</h2>
-    <p>Title Fight formed in Kingston, Pennsylvania in 2003, starting as a straightforward hardcore punk band and slowly morphing into one of the most fascinating genre-blending acts of their generation. Their sound evolved from aggressive, anthemic post-hardcore into something murkier, more atmospheric, and entirely their own.</p>
-    <p>Over the course of three full-length albums and several EPs, they carved a path that bridged the rawness of hardcore with the dreamlike haze of shoegaze — a rare combination executed with genuine emotional weight. Their influence on a whole wave of bands that followed is hard to overstate.</p>
-
-    <div class="quote-block">
-      <p>"Every record we've made has been a direct reaction to where we were emotionally and musically."</p>
-      <p class="quote-attr">— Ned Russin</p>
+  <section class="sec" id="about">
+    <p class="sec-tag">About</p>
+    <div class="about-layout">
+      <div class="about-sticky">
+        <h2 class="sec-heading">From<br>the <em>basement</em><br>outward</h2>
+      </div>
+      <div class="about-body">
+        <p>Title Fight formed in Kingston, Pennsylvania in 2003 — four teenagers playing fast, loud, and emotionally unguarded. What started as a straightforward hardcore outfit slowly transformed into one of the most quietly influential bands of the 2010s.</p>
+        <p>Over a decade-plus, they resisted every expected trajectory. Rather than chasing trends or consolidating a formula, each record arrived as a genuine step into unfamiliar terrain. By the time <em style="color:var(--paper);font-style:normal;">Hyperview</em> landed in 2015, they had traded power chords for reverb and velocity for atmosphere — arriving somewhere very few bands manage to reach.</p>
+        <p>Their influence on the wave of bands that followed is hard to quantify but easy to hear: the crawling guitars, the dual-vocalist interplay, the willingness to let a song breathe. They did it first, and they did it without a roadmap.</p>
+        <div class="blockquote">
+          <p>"Every record we've made has been a direct reaction to where we were emotionally and musically."</p>
+          <cite>— Ned Russin</cite>
+        </div>
+      </div>
+      <div class="stat-strip">
+        <div class="stat">
+          <p class="stat-val">2003</p>
+          <p class="stat-lbl">Year Founded</p>
+        </div>
+        <div class="stat">
+          <p class="stat-val">3</p>
+          <p class="stat-lbl">Full-Length Albums</p>
+        </div>
+        <div class="stat">
+          <p class="stat-val">12</p>
+          <p class="stat-lbl">Years Active</p>
+        </div>
+        <div class="stat">
+          <p class="stat-val">PA</p>
+          <p class="stat-lbl">Kingston, Pennsylvania</p>
+        </div>
+      </div>
     </div>
   </section>
 
   <!-- DISCOGRAPHY -->
-  <section>
-    <p class="section-label">Discography</p>
-    <h2>The Records</h2>
-    <p>Three full-lengths that map a complete artistic evolution — from raw hardcore to something closer to a dream.</p>
+  <section class="sec" id="records">
+    <p class="sec-tag">Discography</p>
+    <h2 class="sec-heading">Three Records.<br>One Arc.</h2>
+    <p class="discog-sub">Each full-length maps a distinct phase of the band's evolution — from raw and propulsive to slow and reverb-saturated.</p>
+    <div class="albums-grid">
 
-    <div class="albums">
-      <div class="album">
-        <div class="album-art"><span class="album-icon">TF</span></div>
-        <p class="album-year">2011</p>
-        <p class="album-title">Shed</p>
-        <p class="album-label">SideOneDummy Records</p>
+      <div class="album shed">
+        <span class="album-ghost-num">01</span>
+        <div class="album-fill">
+          <div class="album-pip"></div>
+          <p class="album-year">2011</p>
+          <p class="album-name">Shed</p>
+          <p class="album-rec">SideOneDummy Records</p>
+          <ul class="track-list">
+            <li><span class="dash">—</span>Shed</li>
+            <li><span class="dash">—</span>Be a Friend</li>
+            <li><span class="dash">—</span>Symmetry</li>
+            <li><span class="dash">—</span>Leaf</li>
+            <li><span class="dash">—</span>My Slumbering Heart</li>
+          </ul>
+          <span class="album-genre-tag">Post-Hardcore</span>
+        </div>
       </div>
-      <div class="album">
-        <div class="album-art"><span class="album-icon">TF</span></div>
-        <p class="album-year">2012</p>
-        <p class="album-title">Floral Green</p>
-        <p class="album-label">SideOneDummy Records</p>
+
+      <div class="album floral">
+        <span class="album-ghost-num">02</span>
+        <div class="album-fill">
+          <div class="album-pip"></div>
+          <p class="album-year">2012</p>
+          <p class="album-name">Floral Green</p>
+          <p class="album-rec">SideOneDummy Records</p>
+          <ul class="track-list">
+            <li><span class="dash">—</span>Head In The Ceiling Fan</li>
+            <li><span class="dash">—</span>Lefty</li>
+            <li><span class="dash">—</span>Numb, But I Still Feel It</li>
+            <li><span class="dash">—</span>For Your Health</li>
+            <li><span class="dash">—</span>Evaporated</li>
+          </ul>
+          <span class="album-genre-tag">Post-Hardcore &middot; Alt</span>
+        </div>
       </div>
-      <div class="album">
-        <div class="album-art"><span class="album-icon">TF</span></div>
-        <p class="album-year">2015</p>
-        <p class="album-title">Hyperview</p>
-        <p class="album-label">Anti- Records</p>
+
+      <div class="album hyper">
+        <span class="album-ghost-num">03</span>
+        <div class="album-fill">
+          <div class="album-pip"></div>
+          <p class="album-year">2015</p>
+          <p class="album-name">Hyperview</p>
+          <p class="album-rec">Anti- Records</p>
+          <ul class="track-list">
+            <li><span class="dash">—</span>New Vision</li>
+            <li><span class="dash">—</span>Rose of Sharon</li>
+            <li><span class="dash">—</span>Chlorine</li>
+            <li><span class="dash">—</span>Happy Go Lucky</li>
+            <li><span class="dash">—</span>Your Pain Is Mine Now</li>
+          </ul>
+          <span class="album-genre-tag">Shoegaze &middot; Dream Pop</span>
+        </div>
       </div>
+
     </div>
   </section>
 
   <!-- MEMBERS -->
-  <section>
-    <p class="section-label">Members</p>
-    <h2>The Band</h2>
-    <p>A four-piece from Pennsylvania who grew up together and made records that sounded like it.</p>
-
-    <div class="members">
+  <section class="sec" id="members">
+    <p class="sec-tag">Members</p>
+    <h2 class="sec-heading" style="margin-bottom:3rem;">The Band</h2>
+    <div class="members-grid">
       <div class="member">
-        <p class="member-name">Jamie</p>
+        <span class="member-bg-num">01</span>
+        <div class="member-accent"></div>
+        <p class="member-name">Jamie Rhoden</p>
         <p class="member-role">Guitar / Vocals</p>
       </div>
       <div class="member">
-        <p class="member-name">Ned</p>
+        <span class="member-bg-num">02</span>
+        <div class="member-accent"></div>
+        <p class="member-name">Ned Russin</p>
         <p class="member-role">Bass / Vocals</p>
       </div>
       <div class="member">
-        <p class="member-name">Ben</p>
+        <span class="member-bg-num">03</span>
+        <div class="member-accent"></div>
+        <p class="member-name">Ben Russin</p>
         <p class="member-role">Guitar</p>
       </div>
       <div class="member">
-        <p class="member-name">Shane</p>
+        <span class="member-bg-num">04</span>
+        <div class="member-accent"></div>
+        <p class="member-name">Shane Moran</p>
         <p class="member-role">Drums</p>
       </div>
     </div>
   </section>
 
   <!-- SOUND -->
-  <section>
-    <p class="section-label">The Sound</p>
-    <h2>Where They Sit</h2>
-    <p>Start with Shed if you want the raw, fast, emotional hardcore. Follow it with Floral Green — sharper riffs, anthemic choruses, still a punk record at heart. Then let Hyperview hit you: slow-burning, reverb-drenched, shoegaze-soaked, and completely unlike anything they'd done before.</p>
-    <p>Each record sounds like a band shedding a skin. That restlessness is part of what made them so compelling — and why people still talk about them years after they went quiet.</p>
+  <section class="sec" id="sound">
+    <p class="sec-tag">The Sound</p>
+    <h2 class="sec-heading">Shedding<br>Skins</h2>
+    <div class="evo-layout">
+
+      <div class="timeline">
+        <div class="tl-item">
+          <div class="tl-dot"></div>
+          <p class="tl-year">2011</p>
+          <p class="tl-title">Shed</p>
+          <p class="tl-desc">Raw, fast, and emotionally exposed. The band at their most purely hardcore — every second charged with urgency.</p>
+        </div>
+        <div class="tl-item">
+          <div class="tl-dot"></div>
+          <p class="tl-year">2012</p>
+          <p class="tl-title">Floral Green</p>
+          <p class="tl-desc">Sharper melodies, more anthemic choruses. The hardcore core still present but alt-rock instincts breaking through.</p>
+        </div>
+        <div class="tl-item">
+          <div class="tl-dot"></div>
+          <p class="tl-year">2015</p>
+          <p class="tl-title">Hyperview</p>
+          <p class="tl-desc">Velocity replaced by weight. Slow-burning, reverb-drenched, and almost unrecognizable from where they started.</p>
+        </div>
+      </div>
+
+      <div class="evo-prose">
+        <p>Start with <em>Shed</em> if you want the raw, fast, cathartic version of this band. Move to <em>Floral Green</em> when you're ready for the melodies to open up. Then let <em>Hyperview</em> take its time with you — it rewards patience, repeat listens, and nights alone.</p>
+        <p>The band that made <em>Hyperview</em> sounds almost nothing like the band that made <em>Shed</em>. That restlessness — that willingness to shed whatever they'd built — is exactly what made them worth caring about.</p>
+        <div class="tag-cloud">
+          <span class="genre-pill pill-red">Hardcore Punk</span>
+          <span class="genre-pill pill-red">Post-Hardcore</span>
+          <span class="genre-pill pill-green">Alternative Rock</span>
+          <span class="genre-pill pill-green">Indie Rock</span>
+          <span class="genre-pill pill-blue">Shoegaze</span>
+          <span class="genre-pill pill-blue">Dream Pop</span>
+        </div>
+      </div>
+
+    </div>
   </section>
 
+  <!-- FOOTER -->
   <footer>
-    <p>Fan page · <span>Title Fight</span> · Kingston, PA</p>
-    <p style="margin-top: 0.5rem;">Not affiliated with the band.</p>
+    <p class="footer-mark">Title Fight</p>
+    <div class="footer-aside">
+      <strong>Kingston, PA &mdash; Fan Page</strong>
+      Not affiliated with the band.
+    </div>
   </footer>
 
+  <script>
+    // sticky nav
+    const nav = document.getElementById('nav');
+    addEventListener('scroll', () => {
+      nav.classList.toggle('stuck', scrollY > 72);
+    }, { passive: true });
+
+    // scroll reveal
+    const io = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) { e.target.classList.add('vis'); io.unobserve(e.target); }
+      });
+    }, { threshold: 0.1 });
+    document.querySelectorAll('.sec').forEach(el => io.observe(el));
+  </script>
 </body>
 </html>
