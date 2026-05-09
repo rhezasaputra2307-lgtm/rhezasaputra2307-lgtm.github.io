@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Title Fight</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --black: #0d0d0d;
+      --white: #f0ece4;
+      --red: #c0392b;
+      --muted: #888;
+      --border: #2a2a2a;
+    }
+
+    body {
+      background: var(--black);
+      color: var(--white);
+      font-family: 'IBM Plex Mono', monospace;
+      min-height: 100vh;
+    }
+
+    /* HERO */
+    .hero {
+      position: relative;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      overflow: hidden;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(255,255,255,0.015) 2px,
+        rgba(255,255,255,0.015) 4px
+      );
+      pointer-events: none;
+    }
+
+    .hero-noise {
+      position: absolute;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+    }
+
+    .hero-label {
+      font-size: 11px;
+      letter-spacing: 0.4em;
+      color: var(--red);
+      text-transform: uppercase;
+      margin-bottom: 1.5rem;
+      animation: fadeup 1s ease both;
+    }
+
+    .hero-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(80px, 18vw, 200px);
+      line-height: 0.88;
+      letter-spacing: -0.01em;
+      animation: fadeup 1s 0.1s ease both;
+    }
+
+    .hero-title span {
+      display: block;
+    }
+
+    .hero-title .red { color: var(--red); }
+
+    .hero-sub {
+      margin-top: 2rem;
+      font-size: 12px;
+      color: var(--muted);
+      letter-spacing: 0.2em;
+      animation: fadeup 1s 0.2s ease both;
+    }
+
+    .scroll-hint {
+      position: absolute;
+      bottom: 2rem;
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 0.3em;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes fadeup {
+      from { opacity: 0; transform: translateY(24px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.3; } 50% { opacity: 1; }
+    }
+
+    /* SECTIONS */
+    section {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 6rem 2rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .section-label {
+      font-size: 10px;
+      letter-spacing: 0.5em;
+      color: var(--red);
+      text-transform: uppercase;
+      margin-bottom: 2rem;
+    }
+
+    h2 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(40px, 8vw, 80px);
+      line-height: 1;
+      margin-bottom: 2rem;
+    }
+
+    p {
+      font-size: 14px;
+      line-height: 1.9;
+      color: #bbb;
+      max-width: 65ch;
+    }
+
+    p + p { margin-top: 1rem; }
+
+    /* DISCOGRAPHY */
+    .albums {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 2rem;
+      margin-top: 3rem;
+    }
+
+    .album {
+      position: relative;
+    }
+
+    .album-art {
+      width: 100%;
+      aspect-ratio: 1;
+      background: var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .album-art::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .album-icon {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 60px;
+      color: rgba(255,255,255,0.06);
+      letter-spacing: -2px;
+    }
+
+    .album-year {
+      font-size: 10px;
+      letter-spacing: 0.3em;
+      color: var(--red);
+      margin-bottom: 0.4rem;
+    }
+
+    .album-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 22px;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.3rem;
+    }
+
+    .album-label {
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    /* MEMBERS */
+    .members {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 1.5rem;
+      margin-top: 3rem;
+    }
+
+    .member {
+      padding: 1.5rem;
+      border: 1px solid var(--border);
+      position: relative;
+    }
+
+    .member::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 2px;
+      height: 100%;
+      background: var(--red);
+    }
+
+    .member-name {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 22px;
+      margin-bottom: 0.3rem;
+    }
+
+    .member-role {
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 0.2em;
+    }
+
+    /* QUOTES */
+    .quote-block {
+      margin: 4rem 0 0;
+      padding: 2rem;
+      border-left: 2px solid var(--red);
+    }
+
+    .quote-block p {
+      font-size: 18px;
+      line-height: 1.6;
+      color: var(--white);
+      font-style: italic;
+      max-width: none;
+    }
+
+    .quote-attr {
+      margin-top: 1rem;
+      font-size: 11px;
+      letter-spacing: 0.3em;
+      color: var(--muted);
+    }
+
+    /* FOOTER */
+    footer {
+      text-align: center;
+      padding: 4rem 2rem;
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 0.2em;
+    }
+
+    footer span { color: var(--red); }
+  </style>
+</head>
+<body>
+
+  <div class="hero">
+    <div class="hero-noise"></div>
+    <p class="hero-label">Kingston, Pennsylvania — Est. 2003</p>
+    <h1 class="hero-title">
+      <span>TITLE</span>
+      <span class="red">FIGHT</span>
+    </h1>
+    <p class="hero-sub">Post-Hardcore · Shoegaze · Indie Rock</p>
+    <p class="scroll-hint">↓ &nbsp; scroll</p>
+  </div>
+
+  <!-- ABOUT -->
+  <section>
+    <p class="section-label">About</p>
+    <h2>Four Kids From Scranton</h2>
+    <p>Title Fight formed in Kingston, Pennsylvania in 2003, starting as a straightforward hardcore punk band and slowly morphing into one of the most fascinating genre-blending acts of their generation. Their sound evolved from aggressive, anthemic post-hardcore into something murkier, more atmospheric, and entirely their own.</p>
+    <p>Over the course of three full-length albums and several EPs, they carved a path that bridged the rawness of hardcore with the dreamlike haze of shoegaze — a rare combination executed with genuine emotional weight. Their influence on a whole wave of bands that followed is hard to overstate.</p>
+
+    <div class="quote-block">
+      <p>"Every record we've made has been a direct reaction to where we were emotionally and musically."</p>
+      <p class="quote-attr">— Ned Russin</p>
+    </div>
+  </section>
+
+  <!-- DISCOGRAPHY -->
+  <section>
+    <p class="section-label">Discography</p>
+    <h2>The Records</h2>
+    <p>Three full-lengths that map a complete artistic evolution — from raw hardcore to something closer to a dream.</p>
+
+    <div class="albums">
+      <div class="album">
+        <div class="album-art"><span class="album-icon">TF</span></div>
+        <p class="album-year">2011</p>
+        <p class="album-title">Shed</p>
+        <p class="album-label">SideOneDummy Records</p>
+      </div>
+      <div class="album">
+        <div class="album-art"><span class="album-icon">TF</span></div>
+        <p class="album-year">2012</p>
+        <p class="album-title">Floral Green</p>
+        <p class="album-label">SideOneDummy Records</p>
+      </div>
+      <div class="album">
+        <div class="album-art"><span class="album-icon">TF</span></div>
+        <p class="album-year">2015</p>
+        <p class="album-title">Hyperview</p>
+        <p class="album-label">Anti- Records</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- MEMBERS -->
+  <section>
+    <p class="section-label">Members</p>
+    <h2>The Band</h2>
+    <p>A four-piece from Pennsylvania who grew up together and made records that sounded like it.</p>
+
+    <div class="members">
+      <div class="member">
+        <p class="member-name">Jamie</p>
+        <p class="member-role">Guitar / Vocals</p>
+      </div>
+      <div class="member">
+        <p class="member-name">Ned</p>
+        <p class="member-role">Bass / Vocals</p>
+      </div>
+      <div class="member">
+        <p class="member-name">Ben</p>
+        <p class="member-role">Guitar</p>
+      </div>
+      <div class="member">
+        <p class="member-name">Shane</p>
+        <p class="member-role">Drums</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SOUND -->
+  <section>
+    <p class="section-label">The Sound</p>
+    <h2>Where They Sit</h2>
+    <p>Start with Shed if you want the raw, fast, emotional hardcore. Follow it with Floral Green — sharper riffs, anthemic choruses, still a punk record at heart. Then let Hyperview hit you: slow-burning, reverb-drenched, shoegaze-soaked, and completely unlike anything they'd done before.</p>
+    <p>Each record sounds like a band shedding a skin. That restlessness is part of what made them so compelling — and why people still talk about them years after they went quiet.</p>
+  </section>
+
+  <footer>
+    <p>Fan page · <span>Title Fight</span> · Kingston, PA</p>
+    <p style="margin-top: 0.5rem;">Not affiliated with the band.</p>
+  </footer>
+
+</body>
+</html>
